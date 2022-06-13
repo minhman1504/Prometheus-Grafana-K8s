@@ -15,7 +15,7 @@ spec:
         app: grafana
     spec:
       nodeSelector:
-        hostname: master
+        kubernetes.io/hostname: k3s-master
       containers:
       - name: grafana
         image: grafana/grafana:latest
