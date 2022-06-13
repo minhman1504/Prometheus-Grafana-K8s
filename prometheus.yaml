@@ -1,0 +1,51 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: prometheus-server
+  labels:
+    app: prometheus
+  namespace: monitoring
+  annotations:
+    configmap.reloader.stakater.com/reload: "prometheus-config"
+spec:
+  replicas: 1
+  selector:
+    matchLabels: 
+      app: prometheus
+  template:
+    metadata:
+      labels:
+        app: prometheus
+    spec:
+      nodeSelector:
+        hostname: master
+      serviceAccountName: prometheus
+      containers:
+      - name: prometheus-server
+        image: prom/prometheus
+        volumeMounts:
+          - name: prometheus-config-volume
+            mountPath: /etc/prometheus/prometheus.yml
+            subPath: prometheus.yml
+        ports:
+        - containerPort: 9090
+      volumes:
+        - name: prometheus-config-volume
+          configMap:
+            name: prometheus-config
+---
+kind: Service
+apiVersion: v1
+metadata:
+  name: prometheus-service
+  namespace: monitoring
+spec:
+  selector:
+    app: prometheus
+  ports:
+    - protocol: TCP
+      port: 8080
+      targetPort: 9090
+      nodePort: 30000
+  type: NodePort
