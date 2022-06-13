@@ -19,7 +19,7 @@ spec:
         app: prometheus
     spec:
       nodeSelector:
-        hostname: master
+        kubernetes.io/hostname: k3s-master
       serviceAccountName: prometheus
       containers:
       - name: prometheus-server
@@ -45,7 +45,7 @@ spec:
     app: prometheus
   ports:
     - protocol: TCP
-      port: 8080
+      port: 9090
       targetPort: 9090
       nodePort: 30000
   type: NodePort
